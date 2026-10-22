@@ -25,3 +25,11 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# .NET / C# Build Outputs & Visual Studio Cache
+desktop-app/bin/
+desktop-app/obj/
+desktop-app/.vs/
+**/.vs/
+*.user
+*.suo
