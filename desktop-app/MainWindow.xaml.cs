@@ -54,12 +54,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             return;
         }
 
-        // Setup User View
         SetupAuthenticatedUserView(result.Data);
         LoginViewGrid.Visibility = Visibility.Collapsed;
         MainDashboardGrid.Visibility = Visibility.Visible;
 
-        // Load Initial Items
         await LoadItemsAsync();
     }
 
@@ -68,7 +66,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         UserDisplayNameText.Text = user.Name;
         RoleBadgeText.Text = user.Role.ToUpper();
 
-        // Color badge by role
         RoleBadgeBorder.Background = user.Role.ToLower() switch
         {
             "owner" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8b5cf6")),
@@ -77,11 +74,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             _ => new SolidColorBrush(Colors.Gray)
         };
 
-        // Remove options from UI according to role permissions:
-        // Cashiers cannot add inventory items -> remove '+ Add New Item' button
         AddItemButton.Visibility = CanAddItem ? Visibility.Visible : Visibility.Collapsed;
 
-        // Notify bindings to hide delete buttons for Manager and Cashier
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanDelete)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanAddItem)));
 
@@ -207,7 +201,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void OnAddNewItemClicked(object sender, RoutedEventArgs e)
     {
-        // Client-side quick check, though backend also enforces
         if (_apiService.CurrentUser?.IsCashier == true)
         {
             ShowToast("Permission denied: Cashiers cannot add items.", true);
@@ -236,7 +229,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             ItemFormQuantityTextBox.Text = item.Quantity.ToString();
             ItemFormDescTextBox.Text = item.Description ?? string.Empty;
 
-            // Set category combo
             foreach (ComboBoxItem cbItem in ItemFormCategoryCombo.Items)
             {
                 if (string.Equals(cbItem.Content?.ToString(), item.Category, StringComparison.OrdinalIgnoreCase))
@@ -254,7 +246,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (sender is Button button && button.Tag is Item item)
         {
-            // RBAC check: Only Owner can delete
             if (_apiService.CurrentUser?.IsOwner != true)
             {
                 ShowToast("Permission denied: Only Owner can delete items.", true);
@@ -313,7 +304,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         if (_editingItemId == null)
         {
-            // Create
             var result = await _apiService.CreateItemAsync(name, category, price, quantity, description);
             SaveItemButton.IsEnabled = true;
 
@@ -332,7 +322,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
         else
         {
-            // Update
             var result = await _apiService.UpdateItemAsync(_editingItemId.Value, name, category, price, quantity, description);
             SaveItemButton.IsEnabled = true;
 
@@ -423,7 +412,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         if (sender is Button button && button.Tag is Customer customer)
         {
-            // RBAC check: Only Owner can delete customers
             if (_apiService.CurrentUser?.IsOwner != true)
             {
                 ShowToast("Permission denied: Only Owner can delete customers.", true);
