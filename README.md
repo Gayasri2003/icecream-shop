@@ -74,6 +74,14 @@ php artisan serve
 ```
 The API is available at `http://127.0.0.1:8000/api`.
 
+### 6. Run the WPF Desktop Application
+Ensure the backend server is running, then run the desktop client:
+
+```bash
+dotnet run --project desktop-app
+```
+*(Alternatively, open `desktop-app/IceCreamShop.Desktop.csproj`).*
+
 ---
 
 ## 4. Running Tests
